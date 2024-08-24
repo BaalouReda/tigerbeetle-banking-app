@@ -1,0 +1,35 @@
+version: '3.8'
+services:
+  postgres:
+    container_name: 'postgres-poc-banking'
+    image: 'postgres:latest'
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: poc-banking
+    ports:
+      - '5000:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - banking_network
+  tigerbeetle:
+      image: ghcr.io/tigerbeetle/tigerbeetle
+      container_name: tigerbeetle-poc-banking
+      command: start --addresses=0.0.0.0:3000 /data/0_0.tigerbeetle
+      ports:
+        - "3000:3000"
+      volumes:
+        - tb-data:/data
+      security_opt:
+        - seccomp=unconfined
+      tty: true
+volumes:
+  postgres_data:
+  tb-data:
+    driver: local
+networks:
+  banking_network:
+    driver: bridge
+
+
